@@ -1,0 +1,114 @@
+"use client";
+
+import { useState, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { Copy, Download, FolderOpen, RefreshCw } from 'lucide-react';
+import { RetranscribeDialog } from './RetranscribeDialog';
+import { useConfig } from '@/contexts/ConfigContext';
+
+
+interface TranscriptButtonGroupProps {
+  transcriptCount: number;
+  onCopyTranscript: () => void;
+  onSaveTranscript?: () => void;
+  onOpenMeetingFolder: () => Promise<void>;
+  meetingId?: string;
+  meetingFolderPath?: string | null;
+  onRefetchTranscripts?: () => Promise<void>;
+}
+
+
+export function TranscriptButtonGroup({
+  transcriptCount,
+  onCopyTranscript,
+  onSaveTranscript,
+  onOpenMeetingFolder,
+  meetingId,
+  meetingFolderPath,
+  onRefetchTranscripts,
+}: TranscriptButtonGroupProps) {
+  const { betaFeatures } = useConfig();
+  const [showRetranscribeDialog, setShowRetranscribeDialog] = useState(false);
+
+  const handleRetranscribeComplete = useCallback(async () => {
+    if (onRefetchTranscripts) {
+      await onRefetchTranscripts();
+    }
+  }, [onRefetchTranscripts]);
+
+  return (
+    <div className="flex items-center justify-center w-full gap-2">
+      <ButtonGroup>
+        <Button
+          variant="outline"
+          size="sm"
+          className="px-2 @[22rem]:px-3"
+          onClick={() => {
+            onCopyTranscript();
+          }}
+          disabled={transcriptCount === 0}
+          title={transcriptCount === 0 ? 'No transcript available' : 'Copy Transcript'}
+        >
+          <Copy />
+          <span className="hidden @[22rem]:inline">Copy</span>
+        </Button>
+
+        {onSaveTranscript && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="px-2 @[22rem]:px-3"
+            aria-label="Save transcript"
+            onClick={() => {
+              onSaveTranscript();
+            }}
+            disabled={transcriptCount === 0}
+            title={transcriptCount === 0 ? 'No transcript available' : 'Save transcript as .txt'}
+          >
+            <Download size={18} />
+            <span className="hidden @[22rem]:inline">Save</span>
+          </Button>
+        )}
+
+        <Button
+          size="sm"
+          variant="outline"
+          className="px-2 @[22rem]:px-4"
+          onClick={() => {
+            onOpenMeetingFolder();
+          }}
+          title="Open Recording Folder"
+        >
+          <FolderOpen className="@[22rem]:mr-2" size={18} />
+          <span className="hidden @[22rem]:inline">Recording</span>
+        </Button>
+
+        {betaFeatures.importAndRetranscribe && meetingId && meetingFolderPath && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 border-blue-200 px-2 @[22rem]:px-4"
+            onClick={() => {
+              setShowRetranscribeDialog(true);
+            }}
+            title="Retranscribe to enhance your recorded audio"
+          >
+            <RefreshCw className="@[22rem]:mr-2" size={18} />
+            <span className="hidden @[22rem]:inline">Enhance</span>
+          </Button>
+        )}
+      </ButtonGroup>
+
+      {betaFeatures.importAndRetranscribe && meetingId && meetingFolderPath && (
+        <RetranscribeDialog
+          open={showRetranscribeDialog}
+          onOpenChange={setShowRetranscribeDialog}
+          meetingId={meetingId}
+          meetingFolderPath={meetingFolderPath}
+          onComplete={handleRetranscribeComplete}
+        />
+      )}
+    </div>
+  );
+}

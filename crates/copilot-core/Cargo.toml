@@ -1,0 +1,25 @@
+[package]
+name = "copilot-core"
+version.workspace = true
+description = "Intake Co-Pilot analysis primitives: retrieval, rubric grading, output validation, checkpointing, metrics"
+edition = "2021"
+rust-version = "1.77"
+license = "MIT"
+
+[lib]
+name = "copilot_core"
+path = "src/lib.rs"
+
+[[bin]]
+name = "copilot-eval"
+path = "src/bin/copilot-eval.rs"
+
+[dependencies]
+chacha20poly1305 = { version = "0.10", features = ["std"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+thiserror = "2.0"
+uuid = { version = "1.0", features = ["v4"] }
+
+[dev-dependencies]

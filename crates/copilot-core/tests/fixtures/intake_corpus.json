@@ -1,0 +1,80 @@
+{
+  "reference_hardware": "8 GB Intel laptop (Windows 10 2004) / 8 GB MacBook Air M1",
+  "models": {
+    "stt": "ggml-small.en-q5_1.bin",
+    "embedding": "bge-small-en-v1.5",
+    "llm": "Qwen2.5-3B-Instruct-Q4_K_M.gguf"
+  },
+  "cases": [
+    {
+      "id": "c1",
+      "question": "What is the salary and start date?",
+      "expected": { "asked": true, "answered": true, "rating": "Strong" },
+      "predicted": { "asked": true, "answered": true, "rating": "Strong", "retrieval_rank": 1 },
+      "evidence": { "valid_ids": ["t2", "t3"] }
+    },
+    {
+      "id": "c2",
+      "question": "What are the day-to-day responsibilities?",
+      "expected": { "asked": true, "answered": true, "rating": "Partial" },
+      "predicted": { "asked": true, "answered": true, "rating": "Partial", "retrieval_rank": 1 },
+      "evidence": { "valid_ids": ["t7"] }
+    },
+    {
+      "id": "c3",
+      "question": "Is the role fully remote?",
+      "expected": { "asked": true, "answered": false, "rating": null },
+      "predicted": { "asked": true, "answered": false, "rating": null, "retrieval_rank": 1 },
+      "evidence": { "valid_ids": ["t11"] }
+    },
+    {
+      "id": "c4",
+      "question": "What is the equity refresh cadence?",
+      "expected": { "asked": false, "answered": false, "rating": null },
+      "predicted": { "asked": false, "answered": false, "rating": null, "retrieval_rank": 2 },
+      "evidence": { "valid_ids": [] }
+    },
+    {
+      "id": "c5",
+      "question": "How is performance measured in the first 90 days?",
+      "expected": { "asked": true, "answered": true, "rating": "Poor" },
+      "predicted": { "asked": true, "answered": true, "rating": "Poor", "retrieval_rank": 1 },
+      "evidence": { "valid_ids": ["t15"] }
+    },
+    {
+      "id": "c6",
+      "question": "What does the onboarding plan look like?",
+      "expected": { "asked": true, "answered": true, "rating": "Strong" },
+      "predicted": { "asked": true, "answered": true, "rating": "Strong", "retrieval_rank": 3 },
+      "evidence": { "valid_ids": ["t18", "t19"] }
+    },
+    {
+      "id": "c7",
+      "question": "Are there relocation benefits?",
+      "expected": { "asked": false, "answered": false, "rating": null },
+      "predicted": { "asked": false, "answered": false, "rating": null, "retrieval_rank": 1 },
+      "evidence": { "valid_ids": [] }
+    },
+    {
+      "id": "c8",
+      "question": "What is the team size I would join?",
+      "expected": { "asked": true, "answered": true, "rating": "Partial" },
+      "predicted": { "asked": true, "answered": true, "rating": "Partial", "retrieval_rank": 2 },
+      "evidence": { "valid_ids": ["t22"] }
+    },
+    {
+      "id": "c9",
+      "question": "Does the company sponsor visas?",
+      "expected": { "asked": false, "answered": false, "rating": null },
+      "predicted": { "asked": false, "answered": false, "rating": null, "retrieval_rank": 1 },
+      "evidence": { "valid_ids": [] }
+    },
+    {
+      "id": "c10",
+      "question": "What is the bonus structure?",
+      "expected": { "asked": true, "answered": true, "rating": "Strong" },
+      "predicted": { "asked": true, "answered": true, "rating": "Strong", "retrieval_rank": 1 },
+      "evidence": { "valid_ids": ["t26"] }
+    }
+  ]
+}

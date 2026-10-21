@@ -8,14 +8,17 @@ Intake Pro is a fork of [Meetily](https://github.com/Zackriya-Solutions/meetily)
 
 ## Screenshots
 
-### 1. Live Co-Pilot Call — Question Tagging & Real-Time Transcription
+### 1. Launch Screen — Standard Meeting vs. Meeting with Co-Pilot
+![Launch Screen](docs/screenshots/home-screen.png)
+
+### 2. Question Sets — Add Questions, Sample Phrasings & Sample Answers
+![Co-Pilot Question Sets](docs/screenshots/question-sets.png)
+
+### 3. Live Co-Pilot Call — Question Tagging & Real-Time Transcription
 ![Live Co-Pilot Call](docs/screenshots/copilot-call.png)
 
-### 2. Unified Post-Call Summary — Questions & Answers + Meeting Notes in One Document
+### 4. Unified Post-Call Summary — Questions & Answers + Meeting Notes in One Document
 ![Unified Post-Call Summary](docs/screenshots/unified-summary.png)
-
-### 3. Question Sets — Add Questions, Sample Phrasings & Sample Answers
-![Co-Pilot Question Sets](docs/screenshots/question-sets.png)
 
 ---
 

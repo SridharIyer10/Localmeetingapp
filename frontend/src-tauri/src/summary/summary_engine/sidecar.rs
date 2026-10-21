@@ -261,6 +261,22 @@ impl SidecarManager {
         log::info!("Spawning llama-helper sidecar");
         log::info!("Model path: {}", model_path.display());
 
+        #[cfg(target_os = "macos")]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            if let Ok(meta) = std::fs::metadata(&self.helper_binary_path) {
+                let mut perms = meta.permissions();
+                if perms.mode() & 0o111 == 0 {
+                    perms.set_mode(0o755);
+                    let _ = std::fs::set_permissions(&self.helper_binary_path, perms);
+                }
+            }
+            let _ = std::process::Command::new("/usr/bin/xattr")
+                .args(["-d", "com.apple.quarantine"])
+                .arg(&self.helper_binary_path)
+                .status();
+        }
+
         #[cfg(unix)]
         let mut command = tokio::process::Command::new("nice");
         

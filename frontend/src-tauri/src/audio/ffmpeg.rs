@@ -31,6 +31,21 @@ fn find_ffmpeg_path_internal() -> Option<PathBuf> {
         if let Some(exe_folder) = exe_path.parent() {
             let bundled = exe_folder.join(EXECUTABLE_NAME);
             if bundled.exists() && bundled.is_file() {
+                #[cfg(target_os = "macos")]
+                {
+                    use std::os::unix::fs::PermissionsExt;
+                    if let Ok(meta) = std::fs::metadata(&bundled) {
+                        let mut perms = meta.permissions();
+                        if perms.mode() & 0o111 == 0 {
+                            perms.set_mode(0o755);
+                            let _ = std::fs::set_permissions(&bundled, perms);
+                        }
+                    }
+                    let _ = std::process::Command::new("/usr/bin/xattr")
+                        .args(["-d", "com.apple.quarantine"])
+                        .arg(&bundled)
+                        .status();
+                }
                 debug!("Found bundled ffmpeg: {:?}", bundled);
                 return Some(bundled);
             }

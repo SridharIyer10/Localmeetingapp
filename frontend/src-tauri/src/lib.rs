@@ -435,6 +435,53 @@ pub fn get_language_preference_internal() -> Option<String> {
     LANGUAGE_PREFERENCE.lock().ok().map(|lang| lang.clone())
 }
 
+#[cfg(target_os = "macos")]
+fn clear_macos_bundle_quarantine_and_permissions() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let Ok(exe_path) = std::env::current_exe() else {
+        return;
+    };
+    let Some(macos_dir) = exe_path.parent() else {
+        return;
+    };
+
+    // Ensure sidecar binaries in Contents/MacOS have executable permissions (0o755)
+    // in case archiving/emailing stripped the +x bit.
+    if let Ok(entries) = std::fs::read_dir(macos_dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_file() {
+                if let Ok(meta) = std::fs::metadata(&path) {
+                    let mut perms = meta.permissions();
+                    if perms.mode() & 0o111 == 0 {
+                        perms.set_mode(0o755);
+                        let _ = std::fs::set_permissions(&path, perms);
+                    }
+                }
+            }
+        }
+    }
+
+    // Clear com.apple.quarantine from the enclosing .app bundle (or Contents/MacOS)
+    // so sidecar binaries (llama-helper, ffmpeg) and future launches are never blocked by Gatekeeper.
+    let target_dir = macos_dir
+        .parent()
+        .and_then(|contents| contents.parent())
+        .filter(|bundle| {
+            bundle
+                .extension()
+                .and_then(|e| e.to_str())
+                .is_some_and(|e| e.eq_ignore_ascii_case("app"))
+        })
+        .unwrap_or(macos_dir);
+
+    let _ = std::process::Command::new("/usr/bin/xattr")
+        .args(["-dr", "com.apple.quarantine"])
+        .arg(target_dir)
+        .status();
+}
+
 pub fn run() {
     log::set_max_level(log::LevelFilter::Info);
 
@@ -463,6 +510,9 @@ pub fn run() {
         .manage(audio::init_system_audio_state())
         .manage(summary::summary_engine::ModelManagerState(Arc::new(tokio::sync::Mutex::new(None))))
         .setup(|_app| {
+            #[cfg(target_os = "macos")]
+            clear_macos_bundle_quarantine_and_permissions();
+
             #[cfg(target_os = "windows")]
             match _app.path().resolve(
                 "onnxruntime.dll",
